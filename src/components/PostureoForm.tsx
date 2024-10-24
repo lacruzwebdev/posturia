@@ -6,8 +6,10 @@ import { Input } from "./ui/input"
 import { readStreamableValue } from "ai/rsc"
 import toast from "react-hot-toast"
 import { schema } from "@/lib/formSchema"
+import { Spinner } from "./ui/spinner"
 
 export default function PostureoForm({ session }: { session: Session }) {
+  const [isGenerating, setIsGenerating] = useState(false)
   const [prompt, setPrompt] = useState("")
   const [generation, setGeneration] = useState("")
 
@@ -23,15 +25,17 @@ export default function PostureoForm({ session }: { session: Session }) {
       <form
         onSubmit={async (e) => {
           e.preventDefault()
-          const parsedInput = schema.parse({ prompt })
-          setPrompt("")
-          setGeneration("")
           if (!generation) {
+            const parsedInput = schema.parse({ prompt })
+            setIsGenerating(true)
+            setPrompt("")
+            setGeneration("")
             const { output } = await getPostureo(parsedInput.prompt)
 
             for await (const delta of readStreamableValue(output)) {
               setGeneration((currentGeneration) => `${currentGeneration}${delta}`)
             }
+            setIsGenerating(false)
           } else {
             const isPublished = await publishInLinkedin(generation, session).then(
               (res) => res.res === "ok"
@@ -45,18 +49,28 @@ export default function PostureoForm({ session }: { session: Session }) {
         }}
         className="gap-4 flex flex-col"
       >
-        <Input
-          type="text"
-          name="prompt"
-          placeholder="What do you want to humble brag about?"
-          onChange={(e) => setPrompt(e.target.value)}
-          value={prompt}
-          required
-          maxLength={160}
-          minLength={10}
-        />
-        {}
-        <Button type="submit">{generation ? "Publish in Linkedin" : "Generate"}</Button>
+        {!generation && (
+          <Input
+            type="text"
+            name="prompt"
+            placeholder="What do you want to humble brag about?"
+            onChange={(e) => setPrompt(e.target.value)}
+            value={prompt}
+            required
+            disabled={isGenerating}
+            maxLength={160}
+            minLength={10}
+          />
+        )}
+        <Button type="submit" disabled={isGenerating}>
+          {isGenerating ? (
+            <Spinner className="text-white" />
+          ) : generation ? (
+            "Publish in Linkedin"
+          ) : (
+            "Generate"
+          )}
+        </Button>
       </form>
     </div>
   )
