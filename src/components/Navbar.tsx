@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 
 export default async function Navbar() {
   const session = await auth()
-  console.log(session)
 
   return (
     <header className="flex w-container py-4 mx-auto justify-between items-center absolute left-0 right-0">

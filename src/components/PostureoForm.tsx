@@ -7,6 +7,7 @@ import { readStreamableValue } from "ai/rsc"
 import toast from "react-hot-toast"
 import { schema } from "@/lib/formSchema"
 import { Spinner } from "./ui/spinner"
+import { LinkedInLogoIcon } from "@radix-ui/react-icons"
 
 export default function PostureoForm({ session }: { session: Session }) {
   const [isGenerating, setIsGenerating] = useState(false)
@@ -62,15 +63,25 @@ export default function PostureoForm({ session }: { session: Session }) {
             minLength={10}
           />
         )}
-        <Button type="submit" disabled={isGenerating}>
-          {isGenerating ? (
+        {isGenerating ? (
+          <Button type="button" disabled>
             <Spinner className="text-white" />
-          ) : generation ? (
-            "Publish in Linkedin"
-          ) : (
-            "Generate"
-          )}
-        </Button>
+          </Button>
+        ) : generation ? (
+          <>
+            <Button type="button" onClick={() => setGeneration("")}>
+              WTF is this!? Regenerate!
+            </Button>
+            <Button type="submit" disabled={isGenerating} className="bg-[#0b66c2]">
+              <LinkedInLogoIcon />
+              <p>Publish in Linkedin</p>
+            </Button>
+          </>
+        ) : (
+          <Button type="submit" disabled={isGenerating}>
+            Generate
+          </Button>
+        )}
       </form>
     </div>
   )
