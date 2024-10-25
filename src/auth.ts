@@ -22,6 +22,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    authorized({ request, auth }) {
+      const { pathname } = request.nextUrl
+      if (pathname === "/dashboard") return !!auth
+      return true
+    },
     async jwt({ token, account, profile }) {
       if (account) {
         token.accessToken = account.access_token

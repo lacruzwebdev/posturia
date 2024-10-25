@@ -1,4 +1,4 @@
-import { auth, signIn, signOut } from "@/auth"
+import { auth, signIn } from "@/auth"
 import { Button } from "./ui/button"
 import { LinkedInLogoIcon } from "@radix-ui/react-icons"
 
@@ -6,16 +6,7 @@ export default async function NavbarLogin() {
   const session = await auth()
   return (
     <div>
-      {session ? (
-        <form
-          action={async () => {
-            "use server"
-            await signOut()
-          }}
-        >
-          <Button type="submit">Signout</Button>
-        </form>
-      ) : (
+      {!session && (
         <form
           action={async () => {
             "use server"
